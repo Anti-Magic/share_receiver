@@ -34,7 +34,13 @@ func main() {
 		fmt.Println("[Red] 参数错误，请输入sender地址")
 		return
 	}
+
 	addr = os.Args[1]
+
+	if len(os.Args) > 2 {
+		path = os.Args[2]
+	}
+
 	tcpAddr, err := net.ResolveTCPAddr("tcp4", addr)
 	checkerr(err)
 	conn, err := net.DialTCP("tcp", nil, tcpAddr)
