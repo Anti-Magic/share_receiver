@@ -27,6 +27,9 @@ func main() {
 	path := "."
 	addr := ""
 
+	// 已接收的文件大小
+	receivedLength := 0
+
 	// 是否替换"\"为"/"，用于windows系统共享文件到类unix系统
 	replaceSlash := false
 
@@ -67,7 +70,8 @@ func main() {
 			if err != nil {
 				fmt.Println("[Red] socket closed: ", err)
 				if err.Error() == "EOF" {
-					fmt.Println("[Red] 貌似发送完成了。。")
+					fmt.Println("[Red] Maybe Succeed.")
+					fmt.Println("[Red] Received Size:", receivedLength, "byte")
 				}
 				return
 			}
@@ -111,7 +115,7 @@ func main() {
 			os.MkdirAll(path+shareFileInfo.Path, 0700)
 		}
 		nativeFilePath := path + shareFileInfo.Path + "/" + shareFileInfo.Name
-		fmt.Println("[Red] handle: ", nativeFilePath)
+		fmt.Println("[Red] handle: ", nativeFilePath, shareFileInfo.Size/1024, "KB")
 		file, err := os.Create(nativeFilePath)
 		bufferlen := 1024 * 1024
 		sum := int64(0)
@@ -128,7 +132,9 @@ func main() {
 				return
 			}
 			file.Write(buffer[:n])
+			receivedLength += n
 			sum += int64(n)
 		}
+		fmt.Println("[Red] received:", receivedLength/1024/1024, "MB")
 	}
 }
