@@ -47,7 +47,7 @@ func main() {
 	checkerr(err)
 
 	// 替换slash需要额外加一个true参数
-	if len(os.Args) > 2 && os.Args[2] == "true" {
+	if len(os.Args) > 3 && os.Args[3] == "true" {
 		replaceSlash = true
 	}
 
@@ -66,7 +66,9 @@ func main() {
 			n, err := conn.Read(buffer)
 			if err != nil {
 				fmt.Println("[Red] socket closed: ", err)
-				fmt.Println("[Red] 貌似发送完成了。。")
+				if err.Error() == "EOF" {
+					fmt.Println("[Red] 貌似发送完成了。。")
+				}
 				return
 			}
 			intdata = append(intdata[:intsum], buffer[:n]...)
@@ -106,9 +108,9 @@ func main() {
 		//根据json描述，创建目录，写入文件
 		dirInfo, err := os.Stat(shareFileInfo.Path)
 		if err != nil || !dirInfo.IsDir() {
-			os.MkdirAll(path+"/"+shareFileInfo.Path, 0700)
+			os.MkdirAll(path+shareFileInfo.Path, 0700)
 		}
-		nativeFilePath := path + "/" + shareFileInfo.Path + "/" + shareFileInfo.Name
+		nativeFilePath := path + shareFileInfo.Path + "/" + shareFileInfo.Name
 		fmt.Println("[Red] handle: ", nativeFilePath)
 		file, err := os.Create(nativeFilePath)
 		bufferlen := 1024 * 1024
